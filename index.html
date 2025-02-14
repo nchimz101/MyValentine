@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Love, Patience 💖</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        .bouncing {
+            animation: bounce 2s ease-in-out infinite;
+        }
+        .love-bg {
+            background: linear-gradient(135deg, #ffe5f0 0%, #fff0f5 100%);
+        }
+        .photo-frame {
+            background: white;
+            padding: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: rotate(-3deg);
+            transition: transform 0.3s ease;
+        }
+        .photo-frame:hover {
+            transform: rotate(0deg) scale(1.05);
+        }
+        .cute-button {
+            background: linear-gradient(135deg, #ff6b95 0%, #ff8eb2 100%);
+            transition: all 0.3s ease;
+        }
+        .cute-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(255, 107, 149, 0.4);
+        }
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            40% { transform: scale(1); }
+            60% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .heartbeat {
+            animation: heartbeat 1.5s ease infinite;
+        }
+        .petal {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: #ffc0cb;
+            border-radius: 150% 0 150% 0;
+            animation: falling 10s ease-in-out infinite;
+        }
+        @keyframes falling {
+            0% { transform: translateY(-100vh) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(720deg); }
+        }
+        .music-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(255, 107, 149, 0.3);
+            z-index: 1000;
+        }
+        .sparkle {
+            position: absolute;
+            pointer-events: none;
+            animation: sparkle 1.5s linear forwards;
+        }
+        @keyframes sparkle {
+            0% { transform: scale(0) rotate(0deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: scale(1.5) rotate(180deg); opacity: 0; }
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        .photo-gallery {
+            perspective: 1000px;
+        }
+        .photo-frame.rotating {
+            transform-style: preserve-3d;
+            transition: transform 1s;
+        }
+        .cute-playlist {
+            max-height: 150px;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body class="love-bg min-h-screen">
+    <!-- Music Player -->
+    <div class="music-player glass">
+        <div class="mb-2">
+            <select id="songSelect" class="w-full p-2 rounded-md bg-white/50">
+                <option value="https://www.bensound.com/bensound-music/bensound-cute.mp3">Cute Love Song</option>
+                <option value="https://www.bensound.com/bensound-music/bensound-sweet.mp3">Sweet Dreams</option>
+                <option value="https://www.bensound.com/bensound-music/bensound-romantic.mp3">Romantic Piano</option>
+            </select>
+        </div>
+        <audio id="bgMusic" loop></audio>
+        <button id="musicToggle" class="cute-button px-4 py-2 rounded-full text-white text-sm w-full">
+            🎵 Play Music
+        </button>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header with Floating Hearts -->
+        <header class="text-center mb-12 relative">
+            <h1 class="text-5xl md:text-7xl font-bold text-pink-600 mb-4 floating">
+                My Dearest Patience 💖
+                <span class="absolute -top-4 -right-4 text-2xl heartbeat">💝</span>
+                <span class="absolute -top-4 -left-4 text-2xl heartbeat" style="animation-delay: 0.5s">💖</span>
+            </h1>
+            <p class="text-2xl text-pink-500 italic">"My Heart's Perfect Match"</p>
+        </header>
+
+        <!-- Floating Elements -->
+        <div id="floating-elements" class="fixed top-0 left-0 w-full h-full pointer-events-none z-10"></div>
+
+        <!-- New Memory Counter -->
+        <div class="text-center mb-12">
+            <div class="bg-white rounded-full inline-block px-8 py-4 shadow-lg">
+                <h3 class="text-2xl font-bold text-pink-600">Our Love Journey</h3>
+                <div id="loveCounter" class="text-4xl font-bold text-pink-500"></div>
+                <p class="text-sm text-pink-400">days of happiness together</p>
+            </div>
+        </div>
+
+        <!-- Love Story Timeline -->
+        <div class="max-w-4xl mx-auto mb-16">
+            <h2 class="text-3xl font-bold text-pink-600 text-center mb-8">Our Precious Moments 📸</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="photo-frame rotating glass">
+                    <img id="photo1" class="w-full h-64 object-cover rounded" alt="Us"/>
+                    <p class="text-center mt-2 text-pink-600 font-semibold" id="caption1"></p>
+                </div>
+                <div class="photo-frame rotating glass">
+                    <img id="photo2" class="w-full h-64 object-cover rounded" alt="Together"/>
+                    <p class="text-center mt-2 text-pink-600 font-semibold" id="caption2"></p>
+                </div>
+                <div class="photo-frame rotating glass">
+                    <img id="photo3" class="w-full h-64 object-cover rounded" alt="Love"/>
+                    <p class="text-center mt-2 text-pink-600 font-semibold" id="caption3"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Why I Love You Section -->
+        <div class="bg-white rounded-2xl p-8 shadow-lg mb-16 max-w-4xl mx-auto glass">
+            <h2 class="text-3xl font-bold text-pink-600 text-center mb-8">Why I Love You So Much 💝</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-center p-4 rounded-lg bg-pink-50 hover:bg-pink-100 transition-colors">
+                    <div class="text-4xl mb-2 bouncing">🥰</div>
+                    <h3 class="font-bold text-pink-600 mb-2">Your Beautiful Heart</h3>
+                    <p>Your compassion for others and dedication to helping young women in Zambia amazes me every day</p>
+                </div>
+                <div class="text-center p-4 rounded-lg bg-pink-50 hover:bg-pink-100 transition-colors">
+                    <div class="text-4xl mb-2 bouncing">✨</div>
+                    <h3 class="font-bold text-pink-600 mb-2">Your Brilliant Mind</h3>
+                    <p>Your intelligence and passion for science inspire me to be better</p>
+                </div>
+                <div class="text-center p-4 rounded-lg bg-pink-50 hover:bg-pink-100 transition-colors">
+                    <div class="text-4xl mb-2 bouncing">💖</div>
+                    <h3 class="font-bold text-pink-600 mb-2">Your Amazing Love</h3>
+                    <p>The way you care for me and make every day special fills my heart with joy</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Special Skills Section -->
+        <div class="bg-white rounded-2xl p-8 shadow-lg mb-16 max-w-4xl mx-auto glass">
+            <h2 class="text-3xl font-bold text-pink-600 text-center mb-8">Your Special Powers 🌟</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                <div class="skill-card p-4 text-center rounded-lg bg-gradient-to-r from-pink-100 to-pink-200 hover:from-pink-200 hover:to-pink-300 transition-colors">
+                    <p class="font-bold">Making Me Smile 😊</p>
+                    <div class="mt-2 text-sm">10/10 Expert Level</div>
+                </div>
+                <div class="skill-card p-4 text-center rounded-lg bg-gradient-to-r from-pink-100 to-pink-200 hover:from-pink-200 hover:to-pink-300 transition-colors">
+                    <p class="font-bold">Being Adorable 🥰</p>
+                    <div class="mt-2 text-sm">∞/10 Infinite Level</div>
+                </div>
+                <div class="skill-card p-4 text-center rounded-lg bg-gradient-to-r from-pink-100 to-pink-200 hover:from-pink-200 hover:to-pink-300 transition-colors">
+                    <p class="font-bold">Giving Best Hugs 🤗</p>
+                    <div class="mt-2 text-sm">100/10 Supreme Level</div>
+                </div>
+                <div class="skill-card p-4 text-center rounded-lg bg-gradient-to-r from-pink-100 to-pink-200 hover:from-pink-200 hover:to-pink-300 transition-colors">
+                    <p class="font-bold">Being Funny 😄</p>
+                    <div class="mt-2 text-sm">12/10 Comedy Queen</div>
+                </div>
+                <div class="skill-card p-4 text-center rounded-lg bg-gradient-to-r from-pink-100 to-pink-200 hover:from-pink-200 hover:to-pink-300 transition-colors">
+                    <p class="font-bold">Stealing My Heart 💗</p>
+                    <div class="mt-2 text-sm">1000/10 Master Thief</div>
+                </div>
+                <div class="skill-card p-4 text-center rounded-lg bg-gradient-to-r from-pink-100 to-pink-200 hover:from-pink-200 hover:to-pink-300 transition-colors">
+                    <p class="font-bold">Being Perfect 💫</p>
+                    <div class="mt-2 text-sm">∞/10 Naturally Perfect</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Love Message with Enhanced Effects -->
+        <div class="text-center mb-16">
+            <button id="loveButton" class="cute-button text-white px-8 py-4 rounded-full text-xl font-bold group">
+                Click For Love Surprise 💝
+                <span class="absolute -top-2 -right-2 text-lg heartbeat hidden group-hover:block">✨</span>
+            </button>
+        </div>
+
+        <!-- Love Letter -->
+        <div class="max-w-2xl mx-auto bg-white rounded-2xl p-8 shadow-lg mb-16 transform -rotate-1 glass">
+            <h2 class="text-3xl font-bold text-pink-600 text-center mb-6">My Love Letter to You 💌</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                Dearest Patience,
+            </p>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                You're not just a brilliant scientist, but you're also the most amazing person I've ever met. Your smile
+                brightens my darkest days, and your love makes my heart skip a beat. Every moment with you is a treasure,
+                and I fall more in love with you each day.
+            </p>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                I love how you combine your professional excellence with the most adorable personality. Whether you're
+                working on important research or just being silly with me, you're absolutely perfect.
+            </p>
+            <p class="text-gray-700 leading-relaxed text-right">
+                Forever Yours,<br>
+                Your Valentine ❤️
+            </p>
+        </div>
+
+        <!-- Science Love Jokes -->
+        <div class="max-w-4xl mx-auto mb-16 glass p-8 rounded-2xl">
+            <h2 class="text-3xl font-bold text-pink-600 text-center mb-8">Nerdy Love Jokes 🤓</h2>
+            <div id="jokeDisplay" class="text-center text-xl font-medium text-pink-600 mb-4"></div>
+            <button id="newJokeBtn" class="cute-button px-6 py-3 rounded-full text-white mx-auto block">
+                Generate New Joke 😆
+            </button>
+        </div>
+
+        <!-- Interactive Love Letter Writing -->
+        <div class="max-w-4xl mx-auto mb-16 glass p-8 rounded-2xl">
+            <h2 class="text-3xl font-bold text-pink-600 text-center mb-8">Write Your Love Letter 💌</h2>
+            <div class="space-y-4">
+                <textarea id="loveLetter" rows="6" class="w-full p-4 rounded-xl border-2 border-pink-200 focus:border-pink-400 focus:ring focus:ring-pink-200 transition-all resize-none" placeholder="Write your sweet message here..."></textarea>
+                <div class="flex gap-4 justify-center">
+                    <button id="saveLetter" class="cute-button px-6 py-3 rounded-full text-white">
+                        Save Letter 💝
+                    </button>
+                    <button id="viewLetters" class="cute-button px-6 py-3 rounded-full text-white">
+                        View Past Letters 💌
+                    </button>
+                </div>
+            </div>
+            <!-- Letters Display -->
+            <div id="pastLetters" class="hidden mt-8 space-y-4">
+                <h3 class="text-2xl font-bold text-pink-600 text-center">Our Love Letters Archive 📜</h3>
+                <div id="lettersContainer" class="max-h-60 overflow-y-auto space-y-4 p-4"></div>
+            </div>
+        </div>
+
+        <!-- Memory Countdown Timer -->
+        <div class="max-w-4xl mx-auto mb-16 glass p-8 rounded-2xl">
+            <h2 class="text-3xl font-bold text-pink-600 text-center mb-8">Next Special Moment 🎉</h2>
+            <div class="grid grid-cols-4 gap-4 max-w-lg mx-auto">
+                <div class="text-center p-4 bg-pink-50 rounded-xl">
+                    <div id="days" class="text-3xl font-bold text-pink-600">00</div>
+                    <div class="text-sm text-pink-400">Days</div>
+                </div>
+                <div class="text-center p-4 bg-pink-50 rounded-xl">
+                    <div id="hours" class="text-3xl font-bold text-pink-600">00</div>
+                    <div class="text-sm text-pink-400">Hours</div>
+                </div>
+                <div class="text-center p-4 bg-pink-50 rounded-xl">
+                    <div id="minutes" class="text-3xl font-bold text-pink-600">00</div>
+                    <div class="text-sm text-pink-400">Minutes</div>
+                </div>
+                <div class="text-center p-4 bg-pink-50 rounded-xl">
+                    <div id="seconds" class="text-3xl font-bold text-pink-600">00</div>
+                    <div class="text-sm text-pink-400">Seconds</div>
+                </div>
+            </div>
+            <p class="text-center mt-4 text-pink-600 font-medium" id="eventName">Until Our Next Date! 💑</p>
+        </div>
+    </div>
+
+    <script>
+        // Floating elements animation
+        const elements = ['❤️', '🌟', '✨', '💖', '💝', '💕'];
+        
+        function createFloatingElement() {
+            const element = document.createElement('div');
+            element.innerHTML = elements[Math.floor(Math.random() * elements.length)];
+            element.className = 'floating absolute text-2xl';
+            element.style.left = Math.random() * 100 + 'vw';
+            element.style.top = '100vh';
+            document.getElementById('floating-elements').appendChild(element);
+
+            gsap.to(element, {
+                y: -window.innerHeight - 100,
+                x: 'random(-100, 100)',
+                rotation: 'random(-180, 180)',
+                duration: 'random(3, 6)',
+                ease: 'power1.out',
+                onComplete: () => element.remove()
+            });
+        }
+
+        // Create floating elements periodically
+        setInterval(createFloatingElement, 1000);
+
+        // Cute love messages
+        const messages = [
+            "You're the cutest scientist in the whole world! 🥰",
+            "Your smile is my favorite experiment result! 💖",
+            "You + Me = Perfect Chemistry! 💕",
+            "You make my heart go boom boom! 💝",
+            "I love you more than all the stars in the galaxy! ✨",
+            "You're the hypothesis to my conclusion! 🌟",
+            "Our love is scientifically proven to be perfect! 💗"
+        ];
+
+        let currentMessage = 0;
+        document.getElementById('loveButton').addEventListener('click', () => {
+            const message = messages[currentMessage];
+            
+            // Create heart burst effect
+            for(let i = 0; i < 10; i++) {
+                setTimeout(createFloatingElement, i * 100);
+            }
+            
+            // Show message with cute animation
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-xl shadow-lg text-xl font-bold text-pink-600 z-50';
+            messageDiv.textContent = message;
+            document.body.appendChild(messageDiv);
+            
+            gsap.from(messageDiv, {
+                scale: 0,
+                rotation: -180,
+                duration: 0.5,
+                ease: "back.out"
+            });
+            
+            setTimeout(() => {
+                gsap.to(messageDiv, {
+                    scale: 0,
+                    opacity: 0,
+                    duration: 0.5,
+                    onComplete: () => messageDiv.remove()
+                });
+            }, 3000);
+            
+            currentMessage = (currentMessage + 1) % messages.length;
+        });
+
+        // Add hover animations to skill cards
+        document.querySelectorAll('.skill-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                gsap.to(card, {
+                    scale: 1.05,
+                    duration: 0.3
+                });
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, {
+                    scale: 1,
+                    duration: 0.3
+                });
+            });
+        });
+
+        // Add falling petals
+        function createPetal() {
+            const petal = document.createElement('div');
+            petal.className = 'petal';
+            petal.style.left = Math.random() * 100 + 'vw';
+            petal.style.opacity = Math.random();
+            petal.style.transform = `scale(${Math.random() * 0.5 + 0.5})`;
+            document.body.appendChild(petal);
+
+            setTimeout(() => petal.remove(), 10000);
+        }
+
+        setInterval(createPetal, 300);
+
+        // Music player functionality
+        const musicToggle = document.getElementById('musicToggle');
+        const bgMusic = document.getElementById('bgMusic');
+        let isPlaying = false;
+
+        musicToggle.addEventListener('click', () => {
+            if (isPlaying) {
+                bgMusic.pause();
+                musicToggle.innerHTML = '🎵 Play Music';
+            } else {
+                bgMusic.play();
+                musicToggle.innerHTML = '🎵 Pause Music';
+            }
+            isPlaying = !isPlaying;
+        });
+
+        // Add sparkle effect on hover for all interactive elements
+        document.querySelectorAll('.cute-button, .photo-frame, .skill-card').forEach(element => {
+            element.addEventListener('mousemove', (e) => {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.innerHTML = '✨';
+                sparkle.style.left = e.pageX + 'px';
+                sparkle.style.top = e.pageY + 'px';
+                document.body.appendChild(sparkle);
+                setTimeout(() => sparkle.remove(), 1500);
+            });
+        });
+
+        // Love counter
+        const startDate = new Date('2023-01-01'); // Replace with your actual start date
+        function updateLoveCounter() {
+            const now = new Date();
+            const days = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
+            document.getElementById('loveCounter').textContent = days;
+        }
+        updateLoveCounter();
+        setInterval(updateLoveCounter, 1000 * 60 * 60); // Update every hour
+
+        // Enhanced button click effect
+        document.getElementById('loveButton').addEventListener('click', () => {
+            // ...existing button click code...
+            
+            // Add heart burst in circle
+            for(let i = 0; i < 12; i++) {
+                const angle = (i / 12) * Math.PI * 2;
+                const heart = document.createElement('div');
+                heart.innerHTML = '💖';
+                heart.style.position = 'fixed';
+                heart.style.left = '50%';
+                heart.style.top = '50%';
+                document.body.appendChild(heart);
+                
+                gsap.to(heart, {
+                    x: Math.cos(angle) * 100,
+                    y: Math.sin(angle) * 100,
+                    opacity: 0,
+                    duration: 1,
+                    ease: "power2.out",
+                    onComplete: () => heart.remove()
+                });
+            }
+        });
+
+        // Cute photo collection
+        const photos = [
+            { url: 'PXL_20241223_190723332.PORTRAIT.jpg', caption: "Our Special Moments 💑" },
+            { url: 'PXL_20241223_200436321.PORTRAIT.jpg', caption: "Together Forever 💕" },
+            { url: 'PXL_20241223_200455284.PORTRAIT.jpg', caption: "Just Us 💖" },
+            { url: 'PXL_20241224_190928596.PORTRAIT.jpg', caption: "Perfect Match 💑" },
+            { url: 'PXL_20241224_190931313.PORTRAIT.jpg', caption: "Love & Laughter 😊" },
+            { url: 'PXL_20241224_190939447.PORTRAIT.jpg', caption: "Happy Times ✨" },
+            { url: 'PXL_20241224_191046744.PORTRAIT.jpg', caption: "Sweet Memories 💝" },
+            { url: 'PXL_20241224_191305771.PORTRAIT.jpg', caption: "Us Forever 💕" },
+            { url: 'PXL_20241224_191745521.PORTRAIT.jpg', caption: "Pure Love 💖" },
+            { url: 'PXL_20241226_181925454.PORTRAIT.jpg', caption: "Endless Joy 🥰" },
+            { url: 'PXL_20241226_181936201.PORTRAIT.jpg', caption: "Perfect Pair 💑" },
+            { url: 'PXL_20241226_183437211.PORTRAIT~2.jpg', caption: "Love Story 💘" }
+        ];
+
+        // Function to update photos
+        function updatePhotos() {
+            const shuffled = [...photos].sort(() => 0.5 - Math.random());
+            for(let i = 1; i <= 3; i++) {
+                const img = document.getElementById(`photo${i}`);
+                const caption = document.getElementById(`caption${i}`);
+                img.src = shuffled[i-1].url + '?' + new Date().getTime();
+                caption.textContent = shuffled[i-1].caption;
+                
+                // Add flip animation
+                const frame = img.parentElement;
+                frame.style.transform = 'rotateY(180deg)';
+                setTimeout(() => {
+                    frame.style.transform = 'rotateY(0deg)';
+                }, 100);
+            }
+        }
+
+        // Update photos every 10 seconds
+        updatePhotos();
+        setInterval(updatePhotos, 10000);
+
+        // Science love jokes
+        const loveJokes = [
+            "Why did the scientist take his date to the lab? Because they had great chemistry! 🧪",
+            "Are you made of Copper and Tellurium? Because you're Cu-Te! 😘",
+            "According to the second law of thermodynamics, you're increasing the entropy in my heart! 💓",
+            "Are you a carbon sample? Because you're dating material! 😉",
+            "Do you have 11 protons? Because you're Sodium fine! 🧂",
+            "You must be the square root of -1, because you can't be real! 😍",
+            "Our love is like dividing by zero - it's undefined! 💝",
+            "Are you a photon? Because you light up my life! ✨",
+            "My love for you is like pi - irrational and never-ending! 🥧"
+        ];
+
+        function updateJoke() {
+            const jokeDisplay = document.getElementById('jokeDisplay');
+            const randomJoke = loveJokes[Math.floor(Math.random() * loveJokes.length)];
+            
+            gsap.to(jokeDisplay, {
+                opacity: 0,
+                duration: 0.5,
+                onComplete: () => {
+                    jokeDisplay.textContent = randomJoke;
+                    gsap.to(jokeDisplay, {
+                        opacity: 1,
+                        duration: 0.5
+                    });
+                }
+            });
+        }
+
+        document.getElementById('newJokeBtn').addEventListener('click', updateJoke);
+        updateJoke(); // Show initial joke
+
+        // Enhanced music player
+        const songSelect = document.getElementById('songSelect');
+        songSelect.addEventListener('change', () => {
+            const wasPlaying = !bgMusic.paused;
+            bgMusic.src = songSelect.value;
+            if (wasPlaying) {
+                bgMusic.play();
+            }
+        });
+
+        // Set initial song
+        bgMusic.src = songSelect.value;
+
+        // Add glass effect to all major sections
+        document.querySelectorAll('.bg-white').forEach(element => {
+            element.classList.remove('bg-white');
+            element.classList.add('glass');
+        });
+
+        // Love Letter functionality
+        const loveLetterInput = document.getElementById('loveLetter');
+        const saveLetterBtn = document.getElementById('saveLetter');
+        const viewLettersBtn = document.getElementById('viewLetters');
+        const pastLetters = document.getElementById('pastLetters');
+        const lettersContainer = document.getElementById('lettersContainer');
+
+        saveLetterBtn.addEventListener('click', () => {
+            if (!loveLetterInput.value.trim()) return;
+            
+            const letters = JSON.parse(localStorage.getItem('loveLetters') || '[]');
+            letters.push({
+                text: loveLetterInput.value,
+                date: new Date().toLocaleDateString()
+            });
+            localStorage.setItem('loveLetters', JSON.stringify(letters));
+            
+            loveLetterInput.value = '';
+            displayLetters();
+            
+            // Show save animation
+            const heart = document.createElement('div');
+            heart.innerHTML = '💝';
+            heart.className = 'fixed text-4xl';
+            heart.style.left = saveLetterBtn.offsetLeft + 'px';
+            heart.style.top = saveLetterBtn.offsetTop + 'px';
+            document.body.appendChild(heart);
+            
+            gsap.to(heart, {
+                y: -100,
+                opacity: 0,
+                duration: 1,
+                onComplete: () => heart.remove()
+            });
+        });
+
+        viewLettersBtn.addEventListener('click', () => {
+            pastLetters.classList.toggle('hidden');
+            displayLetters();
+        });
+
+        function displayLetters() {
+            const letters = JSON.parse(localStorage.getItem('loveLetters') || '[]');
+            lettersContainer.innerHTML = letters.reverse().map(letter => `
+                <div class="bg-pink-50 p-4 rounded-xl">
+                    <p class="text-gray-700">${letter.text}</p>
+                    <p class="text-sm text-pink-400 mt-2">${letter.date}</p>
+                </div>
+            `).join('');
+        }
+
+        // Countdown Timer
+        const countDownDate = new Date("2026-05-01T00:00:00").getTime(); // May 2026
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = countDownDate - now;
+            
+            document.getElementById("days").textContent = String(Math.floor(distance / (1000 * 60 * 60 * 24))).padStart(2, '0');
+            document.getElementById("hours").textContent = String(Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+            document.getElementById("minutes").textContent = String(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+            document.getElementById("seconds").textContent = String(Math.floor((distance % (1000 * 60)) / 1000)).padStart(2, '0');
+            
+            if (distance < 0) {
+                document.getElementById("eventName").textContent = "It's time! 🎉";
+                document.getElementById("days").textContent = "00";
+                document.getElementById("hours").textContent = "00";
+                document.getElementById("minutes").textContent = "00";
+                document.getElementById("seconds").textContent = "00";
+            }
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+    </script>
+</body>
+</html>
